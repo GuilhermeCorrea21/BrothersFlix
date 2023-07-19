@@ -50,7 +50,7 @@ ses.listen_on(6881, 6891)
 params = {
     'save_path': '/home/wesley/Área de Trabalho/Filmes_torrent/',}
 
-handle = lt.add_magnet_uri(ses, link3, params)
+handle = lt.add_magnet_uri(ses, xPath3, params)
 ses.start_dht()
 
 begin = time.time()
