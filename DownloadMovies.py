@@ -7,7 +7,7 @@ with pw() as p:
     nameMovieUrl = nameMovie.replace(' ', '-')
     MovieUrl = ''
 
-    browser = p.chromium.launch(executable_path='/usr/bin/brave-browser-stable', headless=True)
+    browser = p.chromium.launch(executable_path='/usr/bin/brave-browser-stable', headless=False)
     #page = browser.new_page()
     #page.goto(f"https://limontorrents.com//{nameMovieUrl}")
     #downloadButton = page.locator('xpath=//*[@id="main"]/div/div[1]/div[2]/div[3]/a[1]') 
@@ -17,16 +17,32 @@ with pw() as p:
     url = page2.goto(f"https://torrentdosfilmes.site/{nameMovieUrl}")
     urlStatus = url.status
 
-    if(urlStatus != 404):
-        downloadButton2 = page2.locator('xpath=/html/body/div[1]/main/section/div/article/div[2]/center[3]/a')
+    def XpIsViseble (Xpath):
+        page2.reload()
+        sleep(3)
+        downloadButton2 = page2.locator(f'xpath={Xpath}')
         XpIsViseble = downloadButton2.is_visible()
-
-        if(XpIsViseble == False):
-            page2.reload()
-            downloadButton2 = page2.locator('xpath=/html/body/div[1]/main/section/div/article/div[2]/center[2]/center[1]/div/a')
-            MovieUrl = downloadButton2.get_attribute('href')
+        
+        if(XpIsViseble == True):
+            HrefText = downloadButton2.get_attribute('href')
+            return HrefText
         else:
-            MovieUrl = downloadButton2.get_attribute('href')
+            return XpIsViseble
+        
+    if(urlStatus != 404):
+        
+        link1 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[3]/a')
+
+
+        if(link1 != True):
+            link2 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[2]/center[1]/div/a')
+            
+        if(link2 != True):
+            link3 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[2]/div/a')
+
+
+
+
     else:
         print('Desculpe não encontramos essa página')
         browser.close()
@@ -41,7 +57,7 @@ ses.listen_on(6881, 6891)
 params = {
     'save_path': '/home/wesley/Área de Trabalho/Filmes_torrent/',}
 
-handle = lt.add_magnet_uri(ses, MovieUrl, params)
+handle = lt.add_magnet_uri(ses, link3, params)
 ses.start_dht()
 
 begin = time.time()
