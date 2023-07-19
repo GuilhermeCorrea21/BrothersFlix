@@ -5,8 +5,7 @@ from time import sleep
 with pw() as p:
     nameMovie = input(str('Digite o nome completo do filme: ')).lower()
     nameMovieUrl = nameMovie.replace(' ', '-')
-    MovieUrl = ''
-
+    
     browser = p.chromium.launch(executable_path='/usr/bin/brave-browser-stable', headless=False)
     #page = browser.new_page()
     #page.goto(f"https://limontorrents.com//{nameMovieUrl}")
@@ -30,19 +29,13 @@ with pw() as p:
             return XpIsViseble
         
     if(urlStatus != 404):
+        xPath1 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[3]/a')
         
-        link1 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[3]/a')
-
-
-        if(link1 != True):
-            link2 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[2]/center[1]/div/a')
+        if(xPath1 != True):
+            xPath2 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[2]/center[1]/div/a')
             
-        if(link2 != True):
-            link3 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[2]/div/a')
-
-
-
-
+        if(xPath2 != True):
+            xPath3 = XpIsViseble('/html/body/div[1]/main/section/div/article/div[2]/center[2]/div/a')
     else:
         print('Desculpe não encontramos essa página')
         browser.close()
