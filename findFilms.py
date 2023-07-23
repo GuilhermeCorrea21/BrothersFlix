@@ -88,14 +88,3 @@ with pw() as p:
     film = input('Digite o numero do filme desejado: ')
     print(moviesAvaible[int(film) - 1])
             
-        
-
-
-        
-        
-
-        
-
-        
-        
-        
