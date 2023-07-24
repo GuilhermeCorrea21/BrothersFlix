@@ -13,14 +13,15 @@ def createUrl(currentUrl):
     return urlManipulated
 
 moviesAvaible = []
+lessInfoMovies = []
 z = 0    
 with pw() as p:
     #pesquisar e coletar os filmes
-    browser = p.chromium.launch(executable_path='C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe', headless=True)
+    search = input(str('Digite o nome completo do filme: ')).lower()
+    browser = p.chromium.launch(executable_path='/usr/bin/brave-browser-stable', headless=True)
     page = browser.new_page()
     url = page.goto(f"https://torrentdosfilmes.site")
-    pesquisa = 'batman'
-    page.fill('xpath=/html/body/header/div[1]/div[1]/form/input', pesquisa)
+    page.fill('xpath=/html/body/header/div[1]/div[1]/form/input', search)
     page.locator('xpath=/html/body/header/div[1]/div[1]/form/button').click()
     currentUrl = page.url
 
@@ -48,8 +49,6 @@ with pw() as p:
         lastPage = 1
 
     for x in range(lastPage):    
-        #print(f'Pagina: {x+1}')
-
         currentUrl = page.url
 
         urlManipulated = createUrl(currentUrl)
@@ -80,11 +79,70 @@ with pw() as p:
                elif(ql == '1080p'):
                     quality = titlesFormated.index('1080p')
             listJoin = titlesFormated[0:title] + titlesFormated[quality:-1]
+            lessInfoMovie = titlesFormated[0:title]
             s = ' '
             t = s.join(listJoin)
+            lessInfoMovieJoin = s.join(lessInfoMovie)
             print(f'{z} - {t}')
             moviesAvaible.append(t)
+            lessInfoMovies.append(lessInfoMovieJoin)
  
-    film = input('Digite o numero do filme desejado: ')
-    print(moviesAvaible[int(film) - 1])
-            
+    film = input(int('Digite o numero do filme desejado: '))
+    nameMovie = lessInfoMovies[int(film) - 1]
+    nameMovieUrl = nameMovie.replace(' ', '-')
+    page2 = browser.new_page()
+    url = page2.goto(f"https://torrentdosfilmes.site/{nameMovieUrl}-torrent")
+    urlStatus = url.status
+
+    if(urlStatus != 404):
+        # Coletando e filtrando os links de download
+        sleep(2)
+        downloadLink = page2.evaluate('() => window.arrDBLinks')
+        for mg in range(len(downloadLink)):
+            mGSplit = downloadLink[mg].split(':')[0]
+            if(mGSplit == 'magnet'):
+                downloadLinkMg = downloadLink[mg]
+
+    else:
+        print('Desculpe não encontramos essa página')
+        browser.close()
+
+
+# Realizando download do filme
+import time
+import datetime
+import libtorrent as lt
+
+ses = lt.session()
+ses.listen_on(6881, 6891)
+params = {
+    'save_path': '/home/wesley/Área de Trabalho/Filmes_torrent/',}
+
+handle = lt.add_magnet_uri(ses, downloadLinkMg, params)
+ses.start_dht()
+
+begin = time.time()
+print(datetime.datetime.now())
+
+print ('Baixando os metadados...')
+while (not handle.has_metadata()):
+    time.sleep(1)
+print ('Tem metadados, iniciando o download do torrent...')
+
+print("Starting", handle.name())
+
+while (handle.status().state != lt.torrent_status.seeding):
+    s = handle.status()
+    state_str = ['enfileirado', 'verificando', 'baixando metadados', \
+            'baixando', 'concluído', 'semear', 'alocando']
+    print ('%.2f%% Completo (down: %.1f kb/s up: %.1f kB/s Pares: %d) %s ' % \
+            (s.progress * 100, s.download_rate / 1000, s.upload_rate / 1000, \
+            s.num_peers, state_str[s.state]))
+    time.sleep(5)
+
+end = time.time()
+print(handle.name(), "COMPLETO")
+
+print("Tempo decorrido: ",int((end-begin)//60),"min :", int((end-begin)%60), "sec")
+print(datetime.datetime.now())
+
