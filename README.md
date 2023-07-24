@@ -1,7 +1,8 @@
 # BrothersFlix
 Este projeto se trata de um streaming de video em um servidor local, com dowload de filmes recentes via automação
 
-Versão do python e das bibliotecas usadas para o script de download <br />
+Versão do python e das bibliotecas usadas para o script de download: <br />
+
 Python 3.10.6 <br />
 BeautifulSoup 4.12.2 <br />
 libtorrent 2.0.9 <br />
