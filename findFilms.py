@@ -18,7 +18,7 @@ z = 0
 with pw() as p:
     #pesquisar e coletar os filmes
     search = input(str('Digite o nome completo do filme: ')).lower()
-    browser = p.chromium.launch(executable_path='/usr/bin/brave-browser-stable', headless=True)
+    browser = p.chromium.launch(executable_path='/opt/google/chrome/chrome', headless=True)
     page = browser.new_page()
     url = page.goto(f"https://torrentdosfilmes.site")
     page.fill('xpath=/html/body/header/div[1]/div[1]/form/input', search)
@@ -65,6 +65,10 @@ with pw() as p:
         contador = 0
         for x in texto:
             ManyFilms.append(x.replace('\n', ''))
+        
+        if(len(ManyFilms) == 0):
+            print("Nenhum resultado encontrado.")
+            exit()
 
         for films in ManyFilms:
             z+=1
@@ -87,7 +91,7 @@ with pw() as p:
             moviesAvaible.append(t)
             lessInfoMovies.append(lessInfoMovieJoin)
  
-    film = input(int('Digite o numero do filme desejado: '))
+    film = input('Digite o numero do filme desejado: ')
     nameMovie = lessInfoMovies[int(film) - 1]
     nameMovieUrl = nameMovie.replace(' ', '-')
     page2 = browser.new_page()
@@ -116,7 +120,7 @@ import libtorrent as lt
 ses = lt.session()
 ses.listen_on(6881, 6891)
 params = {
-    'save_path': '/home/wesley/Área de Trabalho/Filmes_torrent/',}
+    'save_path': '/home/dev123/Área de Trabalho/BrotherFlix/Downloads',}
 
 handle = lt.add_magnet_uri(ses, downloadLinkMg, params)
 ses.start_dht()
